@@ -15,8 +15,10 @@ class CreatePostTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['competition', 'completion', 'event']);
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('postable_id');
+            $table->string('postable_type');
+            $table->enum('type', ['competition', 'completion', 'event']);
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

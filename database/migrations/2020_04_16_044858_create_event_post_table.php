@@ -15,7 +15,7 @@ class CreateEventPostTable extends Migration
     {
         Schema::create('event_posts', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->string('event_type');
             $table->string('name');
             $table->date('date');
             $table->string('organizer')->nullable();

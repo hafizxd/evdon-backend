@@ -22,9 +22,31 @@ Route::group(['middleware' => 'api'], function() {
         Route::post('logout', 'AuthController@logout');
     });
 
-    Route::group(['prefix' => 'user'], function() {
-        Route::get('profile', 'UserController@get_profile');
-        Route::put('profile/update', 'UserController@update_profile');
+    Route::group(['prefix' => 'users'], function() {
+        Route::put('profile', 'UserController@update');
+        Route::put('profile/profile-picture', 'UserController@updateProfilePicture');
+
+        Route::get('{id}/profile', 'UserController@show');
+        
+        Route::post('{id}/follows', 'UserController@follow');
+        Route::delete('{id}/follows', 'UserController@unfollow');
+
+        Route::get('{id}/following', 'UserController@showFollowing');
+        Route::get('{id}/followers', 'UserController@showFollowers');
+        
+        Route::get('{id}/posts', 'PostController@showUserPosts');
+    });
+
+    Route::get('timeline-posts', 'PostController@showTimelinePosts');
+
+    Route::group(['prefix' => 'posts'], function() {
+        Route::post('/', 'PostController@store');
+        Route::put('{id}', 'PostController@update');
+        Route::delete('{id}', 'PostController@delete');
+
+        Route::get('{id}/likes', 'PostController@showLikes');
+        Route::post('{id}/likes', 'PostController@likePost');
+        Route::delete('{id}/likes', 'PostController@unlikePost');
     });
 
 });
