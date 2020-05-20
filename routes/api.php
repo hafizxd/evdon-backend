@@ -23,6 +23,8 @@ Route::group(['middleware' => 'api'], function() {
     });
 
     Route::group(['prefix' => 'users'], function() {
+        Route::get('/', 'UserController@showUsers');
+
         Route::put('profile', 'UserController@update');
         Route::put('profile/profile-picture', 'UserController@updateProfilePicture');
 
@@ -47,6 +49,9 @@ Route::group(['middleware' => 'api'], function() {
         Route::get('{id}/likes', 'PostController@showLikes');
         Route::post('{id}/likes', 'PostController@likePost');
         Route::delete('{id}/likes', 'PostController@unlikePost');
+
+        Route::post('{id}/reports', 'PostController@reportPost');
+        Route::delete('{id}/reports', 'PostController@cancelReportPost');
     });
 
 });

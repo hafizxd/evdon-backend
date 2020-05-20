@@ -16,6 +16,24 @@ class UserController extends Controller
     }
 
 
+    public function showUsers(Request $request) {
+        $users = User::when(isset($request->search), function ($query) use ($request) {
+                    return $query->where('name', 'like', '%' . $request->search . '%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($user) {
+                $user->profile_picture = $_SERVER['HTTP_HOST'] . Storage::url('public/profile_pictures/' . $user->profile_picture);
+                return $user;
+            });
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $users
+        ], 200);
+    }
+
+
     public function show($id) {
         $user = User::withCount('following')->withCount('followers')->findOrFail($id);
         

@@ -9,6 +9,7 @@ use App\CompletionPost;
 use App\EventPost;
 use App\User;
 use App\Like;
+use App\Report;
 
 class PostController extends Controller
 {
@@ -148,8 +149,44 @@ class PostController extends Controller
 
         if (isset($like)) $like->delete();
 
+        return response()->json([ 'status' => 'success' ], 200);
+    }
+
+
+    public function reportPost($id) {
+        $post = Post::findOrFail($id);
+        $user = auth()->user();
+
+        $report = Report::where('user_id', $user->id)->where('post_id', $post->id)->first();
+        
+        if (isset($report)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'This post has been reported.'
+            ], 400);
+        }
+
+        Report::create([
+            'user_id' => $user->id,
+            'post_id' => $post->id,
+            'status'  => 'reported'
+        ]);
+
         return response()->json([ 'status' => 'success' ], 201);
     }
+
+
+    public function cancelReportPost($id) {
+        $post = Post::findOrFail($id);
+        $user = auth()->user();
+
+        $report = Report::where('user_id', $user->id)->where('post_id', $post->id)->first();
+
+        if (isset($report)) $report->delete();
+
+        return response()->json([ 'status' => 'success' ], 200);
+    }
+
 
 
 

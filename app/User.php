@@ -25,6 +25,8 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -34,6 +36,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+
 
     public function posts() {
         return $this->hasMany('App\Post');
@@ -49,6 +53,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function likes() {
         return $this->hasMany('App\Like');
+    }
+
+    public function reports() {
+        return $this->hasMany('App\Report');
     }
 
     
@@ -71,7 +79,14 @@ class User extends Authenticatable implements JWTSubject
                 function($query) {
                     return $query->get();
                 }
-            );         
+            );
+
+        // check if post is liked and is reported by auth user
+        $posts = $posts->map(function ($post) {
+            $post['liked'] = $post->isLiked();
+            $post['reported'] = $post->isReported();
+            return $post;
+        });
         
         return $posts;
     }
@@ -102,8 +117,15 @@ class User extends Authenticatable implements JWTSubject
         });
 
         $userPosts = $this->getUserPosts($page, $type);
-
-        $timelinePosts = $userPosts->merge($followingPosts);    
+        
+        $timelinePosts = $userPosts->merge($followingPosts); 
+        
+        // check if post is liked and is reported by auth user
+        $timelinePosts->map(function ($post) {
+            $post['liked'] = $post->isLiked();
+            $post['reported'] = $post->isReported();
+            return $post;
+        });
 
         $sorted = $timelinePosts->sortByDesc('created_at');
 
